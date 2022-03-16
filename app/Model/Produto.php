@@ -49,7 +49,7 @@ class Produto extends Model
 
     protected $table = Constants::TB_PRODUTOS;
 
-    protected $primaryKey = Constants::CD_SOLICITACAO_AVS;
+    protected $primaryKey = Constants::CD_HISTORICO_PRODUTO;
 
     /**
      * @var array
