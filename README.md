@@ -1,9 +1,9 @@
 # app-498d0696
 
-Projeto em Laravel - nova versão do E-AVS.
+Projeto em Laravel.
 - Referência: https://github.com/laravel/laravel
 
-# Instalação
+## Instalação
 ```docker
 1º- O projeto necessita que sejam instalados o "docker", "docker-compose" em seu ambiente.  
 
