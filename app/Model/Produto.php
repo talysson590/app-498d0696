@@ -4,8 +4,11 @@ namespace App\Model;
 
 use App\Constants\Constants;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Collection;
 
 use Illuminate\Database\Eloquent\Model;
 
@@ -49,7 +52,7 @@ class Produto extends Model
 
     protected $table = Constants::TB_PRODUTOS;
 
-    protected $primaryKey = Constants::CD_HISTORICO_PRODUTO;
+    protected $primaryKey = Constants::CD_PRODUTO;
 
     /**
      * @var array

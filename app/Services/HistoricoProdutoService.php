@@ -37,19 +37,28 @@ class HistoricoProdutoService extends AbstractService
      * @param Request $request
      * @return JsonResponse
      */
-    public function getProdutos(Request $request)
+    public function getHistoricos(Request $request)
     {
         $search = json_decode($request->input('search'));
-        $sort = json_decode($request->input('sort'));
+        $sort = $this->orderByValueExists(json_decode($request->input('sort')), Constants::TS_CRIADO);
 
-        $buscar = $this->historicoProduto->with(Constants::HISTORICO)
-            ->when($search->nr_quantidade, function ($query) use ($search) {
-                return $query->where(Constants::NR_QUANTIDADE, $search->nr_quantidade);
+        $buscar = $this->historicoProduto->select(Constants::TB_HISTORICO_PRODUTO.'.*')
+            ->leftJoin(
+                Constants::TB_PRODUTOS,
+                Constants::TB_HISTORICO_PRODUTO . '.' . Constants::CD_PRODUTO,
+                Constants::TB_PRODUTOS . '.' . Constants::CD_PRODUTO
+                )
+            ->with(Constants::PRODUTO)
+            ->when($this->propertyValueExists($search, Constants::SKU), function ($query) use ($search) {
+                return $query->where(Constants::TB_PRODUTOS . '.' . Constants::DS_SKU, 'LIKE', '%' . $search->sku . '%');
             })
-            ->when($search->observacao, function ($query) use ($search) {
+            ->when($this->propertyValueExists($search, Constants::QUANTIDADE), function ($query) use ($search) {
+                return $query->where(Constants::NR_QUANTIDADE, $search->quantidade);
+            })
+            ->when($this->propertyValueExists($search, Constants::OBSERVACAO), function ($query) use ($search) {
                 return $query->where(Constants::DS_OBSERVACAO, $search->observacao);
             })
-            ->when($search->criado, function ($query) use ($search) {
+            ->when($this->propertyValueExists($search, Constants::CRIADO), function ($query) use ($search) {
                 return $query->where(Constants::TS_CRIADO, $search->criado);
             });
 
@@ -65,7 +74,7 @@ class HistoricoProdutoService extends AbstractService
      *
      * @return \Illuminate\Database\Eloquent\Collection
      */
-    public function buscaProduto($id)
+    public function buscaHistoricoById($id)
     {
        return $this->historicoProduto->with(Constants::PRODUTO)->find($id);
     }

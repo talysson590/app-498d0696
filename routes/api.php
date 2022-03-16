@@ -19,3 +19,4 @@ use Illuminate\Support\Facades\Route;
 // });
 Route::apiResource('/produto'   , 'ProdutoController');
 Route::get('/historico-produto' , 'HistoricoProdutoController@index');
+Route::get('/historico-produto/{id}' , 'HistoricoProdutoController@show');

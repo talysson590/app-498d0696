@@ -53,7 +53,7 @@ class ProdutoController extends Controller
      */
     public function show($id)
     {
-        return $this->service->buscaProduto($id);
+        return $this->service->buscaProdutoById($id);
     }
 
     /**

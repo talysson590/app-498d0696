@@ -19,21 +19,26 @@ final class Constants
     const MESSAGE               = 'message';
 
     const ATUALIZACAO           = 'Atualização';
+    const ASC                   = 'ASC';
     const CADASTRO              = 'Cadastro';
     const EXCLUSAO              = 'Exclusão';
     const CD_HISTORICO_PRODUTO  = 'cd_historico_produto';
-    const CD_PRODUTO            = 'cd_produtO';
+    const CD_PRODUTO            = 'cd_produto';
+    const CRIADO                = 'criado';
     const CREATED_AT            = 'created_at';
     const DATA                  = 'data';
     const DELETED               = 'deleted';
+    const DIRECTION             = 'direction';
     const DS_OBSERVACAO         = 'ds_observacao';
     const DS_SKU                = 'ds_sku';
+    const FIELD                 = 'field';
     const NR_QUANTIDADE         = 'nr_quantidade';
     const HISTORICO             = 'historico';
     const IC_REMOVIDO           = 'ic_removido';
     const IC_STATUS             = 'ic_status';
     const ID                    = 'id';
     const OBSERVACAO            = 'observacao';
+    const QUANTIDADE            = 'quantidade';
     const QUANTIDADE_PRODUTOS   = 'quantidade_produtos';
     const PRODUTO               = 'produto';
     const REQUIRED_MAX10_MIN4   = 'required|max:10|min:4';

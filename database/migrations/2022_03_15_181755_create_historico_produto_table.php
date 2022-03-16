@@ -21,9 +21,10 @@ class CreateHistoricoProdutoTable extends Migration
         Schema::create('tb_historico_produto', function (Blueprint $table) {
             $table->increments('cd_historico_produto');
             $table->integer('cd_produto')->length(10)->unsigned();
-            $table->timestamp('ts_criado')->nullable();
             $table->string('ds_observacao', 2000)->nullable();
             $table->integer('nr_quantidade')->nullable()->length(5);
+            $table->timestamp('ts_criado')->nullable();
+            $table->timestamp('ts_atualizado')->nullable();
 
             $table->foreign('cd_produto', 'fk_produto_historico')
                 ->references('cd_produto')

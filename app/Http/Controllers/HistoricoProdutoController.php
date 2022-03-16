@@ -24,13 +24,24 @@ class HistoricoProdutoController extends Controller
     }
 
     /**
-     * Busca os produtos paginado.
+     * Busca os históricos paginado.
      *
      * @param Request $request
      * @return \Illuminate\Database\Eloquent\Collection
      */
     public function index(Request $request)
     {
-        return $this->service->getProdutos($request);
+        return $this->service->getHistoricos($request);
+    }
+
+    /**
+     * Busca um histórico do produto pelo id.
+     *
+     * @param $id
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function show($id)
+    {
+        return $this->service->buscaHistoricoById($id);
     }
 }

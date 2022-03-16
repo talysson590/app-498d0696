@@ -5,7 +5,7 @@ namespace App\Services;
 use App\Constants\Constants;
 use App\Constants\Messages;
 use App\Model\Produto;
-use App\Model\HistoricoProduto;
+use App\Services\HistoricoProdutoService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
@@ -25,17 +25,17 @@ class ProdutoService extends AbstractService
     public $produto;
 
     /**
-     * @var HistoricoProduto
+     * @var HistoricoProdutoService
      */
-    public $historicoProduto;
+    public $historicoProdutoService;
 
     /**
      * ProdutoService constructor.
      */
-    public function __construct(Produto $produto, HistoricoProduto $historicoProduto)
+    public function __construct(Produto $produto, HistoricoProdutoService $historicoProdutoService)
     {
         $this->produto = $produto;
-        $this->historicoProduto = $historicoProduto;
+        $this->historicoProdutoService = $historicoProdutoService;
     }
 
     /**
@@ -47,19 +47,19 @@ class ProdutoService extends AbstractService
     public function getProdutos(Request $request)
     {
         $search = json_decode($request->input('search'));
-        $sort = json_decode($request->input('sort'));
+        $sort = $this->orderByValueExists(json_decode($request->input('sort')), Constants::DS_SKU);
 
         $buscar = $this->produto->with(Constants::HISTORICO)
-            ->when($search->sku, function ($query) use ($search) {
-                return $query->where(Constants::DS_SKU, $search->sku);
+            ->when($this->propertyValueExists($search, Constants::SKU), function ($query) use ($search) {
+                return $query->where(Constants::DS_SKU, 'LIKE', '%' . $search->sku . '%');
             })
-            ->when($search->nr_quantidade, function ($query) use ($search) {
-                return $query->where(Constants::NR_QUANTIDADE, $search->nr_quantidade);
+            ->when($this->propertyValueExists($search, Constants::QUANTIDADE), function ($query) use ($search) {
+                return $query->where(Constants::NR_QUANTIDADE, $search->quantidade);
             })
-            ->when($search->status, function ($query) use ($search) {
+            ->when($this->propertyValueExists($search, Constants::STATUS), function ($query) use ($search) {
                 return $query->where(Constants::IC_STATUS, $search->status);
             })
-            ->when($search->criado, function ($query) use ($search) {
+            ->when($this->propertyValueExists($search, Constants::CRIADO), function ($query) use ($search) {
                 return $query->where(Constants::TS_CRIADO, $search->criado);
             });
 
@@ -75,7 +75,7 @@ class ProdutoService extends AbstractService
      *
      * @return \Illuminate\Database\Eloquent\Collection
      */
-    public function buscaProduto($id)
+    public function buscaProdutoById($id)
     {
        return $this->produto->with(Constants::HISTORICO)->find($id);
     }
@@ -93,30 +93,24 @@ class ProdutoService extends AbstractService
         try {
             $status = Response::HTTP_OK;
 
-            $request->validate([
-                Constants::DS_SKU        => Constants::REQUIRED_MAX10_MIN4,
-                Constants::NR_QUANTIDADE => Constants::REQUIRED_MAX150_MIN5
-            ]);
-
             $input = $request->all();
 
             $produto = new Produto($input);
-            $produto->status = $input[Constants::STATUS];
-
+            
             $return = $produto->save();
 
             /**
              *  Salva o histórico
-             * 
+             *
              *  @var HistoricoProduto
              */
-            $this->historicoProduto->salvarHistorico($produto, Constants::CADASTRO);
+            $this->historicoProdutoService->salvarHistorico($produto, Constants::CADASTRO);
             \DB::commit();
 
             if ($return) {
                 $response = [
                     Constants::SUCCESS => true,
-                    Constants::MESSAGE => Messages::MSG002AG,
+                    Constants::MESSAGE => Messages::MSG001,
                     Constants::DATA    => $produto->toArray()
                 ];
             } else {
@@ -156,10 +150,11 @@ class ProdutoService extends AbstractService
             $produto = Produto::find($id)->update([Constants::IC_REMOVIDO => 1]);
             /**
              *  Salva o histórico
-             * 
+             *
              *  @var HistoricoProduto
              */
-            $this->historicoProduto->salvarHistorico($produto, Constants::EXCLUSAO);
+            $this->historicoProdutoService->salvarHistorico(Produto::find($id), Constants::EXCLUSAO);
+
             if ($produto) {
                 $response = [
                     Constants::SUCCESS => true,
@@ -205,10 +200,10 @@ class ProdutoService extends AbstractService
             if ($produto->save()) {
                 /**
                  *  Salva o histórico
-                 * 
+                 *
                  *  @var HistoricoProduto
                  */
-                $this->historicoProduto->salvarHistorico($produto, Constants::ATUALIZACAO);
+                $this->historicoProdutoService->salvarHistorico($produto, Constants::ATUALIZACAO);
                 $response = [
                     Constants::SUCCESS => true,
                     Constants::MESSAGE => Messages::MSG005,
